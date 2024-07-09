@@ -4,10 +4,11 @@ import numpy as np
 import streamlit as st
 from datetime import datetime
 from scipy.special import softmax
+import mysql.connector
 
 st.title("SENTIMENT ANALYSIS USING HUGGING FACE TRANSFORMER")
 
-import mysql.connector
+#Connection to mysql database
 
 connection = mysql.connector.connect(
   host = "Enter host",
@@ -18,7 +19,6 @@ connection = mysql.connector.connect(
   
 )
 mycursor = connection.cursor(buffered=True)
-
 
 def preprocess(text):
     new_text = []
@@ -53,34 +53,31 @@ def analyze_text(text):
 
 username = st.text_input("Username:", key="username")
 login_successful = False  # Flag to track login status
-
+analysis_result = None  # Initialize variable to store result
 if st.button("Login", key="login"):
     if username:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+        #Inserting login details to the table
         sql = "INSERT INTO user_info(Username, Login_time) VALUES (%s, %s)"
         values = (username, current_time)
         mycursor.execute(sql, values)
-        connection.commit()
+        mydb.commit()
 
         st.success(f"Login successful for {username} at {current_time}")
         login_successful = True  # Update flag on successful login
 
-text_input = st.text_input("Enter text to analyze:")
-analysis_result = None  # Initialize variable to store result
 
-if login_successful:  # Check login status before analyzing text
-    if text_input:
-        analysis_result = analyze_text(text_input)
-
-if analysis_result:
-    st.subheader("Sentiment Analysis Result:")
-    for item in analysis_result:
-        st.write(item)
 else:
-    if login_successful:  # Only show this message if logged in
-        st.warning("No text entered.")
-
+    st.warning("Please login to view results...")
+text_input = st.text_input("Enter text to analyze:")
+        
+if text_input:
+    analysis_result = analyze_text(text_input)    
+if analysis_result:
+        st.subheader("Sentiment Analysis Result:")
+        for item in analysis_result:
+            st.write(item)    
 
 
 
