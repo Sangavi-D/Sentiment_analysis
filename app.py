@@ -12,7 +12,7 @@ st.title("SENTIMENT ANALYSIS USING HUGGING FACE TRANSFORMER")
 
 connection = mysql.connector.connect(
   host = "Enter host",
-  port = 4000,
+  port = Enter port,
   user = "Enter user",
   password = "Enter password",
   database = "sentimentanalysis"  
